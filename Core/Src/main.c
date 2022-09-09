@@ -174,7 +174,6 @@ static void initPalette(void)
     {
         g_flamebuf[y * WIDTH + x] = PALETTE_SIZE-1;
     }
-
 }
 
 /* Using the Systick 1000 Hz millisecond timer to sleep */
@@ -190,7 +189,7 @@ static void sleep(uint32_t delayMs)
 /* Fire simulation is inside this function */
 void defaultTask(void)
 {
-    const int setpointframeTimeMs = 16; // desired frametime in ms
+    const int setpointframeTimeMs = 17; // desired frametime in ms
     const float lpalpha = 0.25f; // for gyro low-pass filter
 
     volatile uint32_t* fb = (uint32_t*)LCD_FRAME_BUFFER; // output framebuffer WIDTH*HEIGHT*4 (one uint32 per pixel ARGB8888)
@@ -209,9 +208,10 @@ void defaultTask(void)
             for (y = 2; y < HEIGHT; y++)
             {
                 const uint8_t rnd = hrng.Instance->DR % 3; // Get a random number from the HW random number generator
-                const uint32_t from = y * WIDTH + x;
-                const uint32_t to = from - rnd + wind + 1;
-                g_flamebuf[to - WIDTH] = g_flamebuf[from] - (rnd&(g_flamebuf[from]>0));
+                const int from = y * WIDTH + x;
+                const int to = from - rnd + wind + 1 - WIDTH;
+                assert(to >= 0 && to < WIDTH*HEIGHT);
+                g_flamebuf[to]  = g_flamebuf[from] - (rnd&(g_flamebuf[from]>0));
             }
         }
 
@@ -225,15 +225,33 @@ void defaultTask(void)
         {
             BSP_GYRO_GetXYZ(rates);
             lprate = (1.0f-lpalpha) * lprate + lpalpha * rates[2]; // use Z-axis (left/right tilt)
-            if (epoch % 2 == 0) // don't add too much wind
-            {
-                wind = (int)(lprate/(2*1024.0f));
-                if (wind >  1) wind =  1;
-                if (wind < -4) wind = -4;
-            }
-            else
+            wind = (int)(lprate/(2*1024.0f));
+            if (wind >  1) wind =  1;
+            if (wind < -4) wind = -4;
+
+            if (epoch % 2 != 0) // don't add too much wind
             {
                 wind = 0;
+            }
+        }
+
+        /* extinguish fire on button press */
+        if(BSP_PB_GetState(BUTTON_KEY) == RESET)
+        {
+            y = HEIGHT - 1;
+            for (x = 0; x < WIDTH; x++)
+            {
+                if (g_flamebuf[y * WIDTH + x] < (PALETTE_SIZE-1))
+                    g_flamebuf[y * WIDTH + x]++;
+            }
+        }
+        else
+        {
+            y = HEIGHT - 1;
+            for (x = 0; x < WIDTH; x++)
+            {
+                if (g_flamebuf[y * WIDTH + x] >= 2)
+                    g_flamebuf[y * WIDTH + x] -= 2;
             }
         }
 

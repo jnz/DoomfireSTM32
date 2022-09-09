@@ -210,7 +210,7 @@ void defaultTask(void)
                 const uint8_t rnd = hrng.Instance->DR % 3; // Get a random number from the HW random number generator
                 const int from = y * WIDTH + x;
                 const int to = from - rnd + wind + 1 - WIDTH;
-                assert(to >= 0 && to < WIDTH*HEIGHT);
+                // assert(to >= 0 && to < WIDTH*HEIGHT);
                 g_flamebuf[to]  = g_flamebuf[from] - (rnd&(g_flamebuf[from]>0));
             }
         }

@@ -191,13 +191,14 @@ static void sleep(uint32_t delayMs)
 void defaultTask(void)
 {
     const int setpointframeTimeMs = 16; // desired frametime in ms
+    const float lpalpha = 0.25f; // for gyro low-pass filter
 
     volatile uint32_t* fb = (uint32_t*)LCD_FRAME_BUFFER; // output framebuffer WIDTH*HEIGHT*4 (one uint32 per pixel ARGB8888)
     int frameTimeMs = 0; // current frametime in ms
     uint8_t uartAsciiOutput[128]; // debug ASCII output buffer for UART sending
-    float rates[3] = {0,0,0};
-    float lprate = 0.0f;
-    int wind = 0;
+    float rates[3] = {0,0,0}; // raw gyroscope rotation rates
+    float lprate = 0.0f; // low-pass filtered rotation rate
+    int wind = 0; // simulate wind/move fire left/right based on rotation rates
 
     for(uint32_t epoch=0;;epoch++)
     {
@@ -219,16 +220,16 @@ void defaultTask(void)
         HAL_DMA2D_PollForTransfer(&hdma2d, setpointframeTimeMs); // make sure DMA2D is ready for the next transfer
         HAL_DMA2D_Start(&hdma2d, (uint32_t)g_flamebuf, (uint32_t)fb, WIDTH, HEIGHT);
 
-        /* poll gyro */
+        /* Change wind based on gyro readings */
         if (g_gyroReady)
         {
             BSP_GYRO_GetXYZ(rates);
-            lprate = 0.50f * lprate + 0.50f * rates[2];
-            if (epoch % 2 == 0)
+            lprate = (1.0f-lpalpha) * lprate + lpalpha * rates[2]; // use Z-axis (left/right tilt)
+            if (epoch % 2 == 0) // don't add too much wind
             {
                 wind = (int)(lprate/(2*1024.0f));
-                if (wind >  1) wind =  1; // default wind (+1) to the right is already included
-                if (wind < -5) wind = -5;
+                if (wind >  1) wind =  1;
+                if (wind < -4) wind = -4;
             }
             else
             {

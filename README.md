@@ -3,7 +3,7 @@ DoomfireSTM32 ("flamebuffer")
 
 An implementation of the Playstation 1 Doom fire effect on an STM32F429 microcontroller:
 
-![gif](doc/example.gif?raw=1)
+![gif](doc/gyro.gif?raw=1)
 
 Read how the Doom fire was done in an article by Fabien Sanglard:
 

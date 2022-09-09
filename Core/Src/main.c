@@ -203,16 +203,25 @@ void defaultTask(void)
     {
         int x, y;
         uint32_t tickStart = HAL_GetTick();
-        for (x = 0; x < WIDTH; x++)
+
+        uint32_t* f = (uint32_t*)g_flamebuf;
+        const int c = wind + 1 - WIDTH;
+        const uint32_t mask = 0x1010101;
+
+        for (int i=2*WIDTH/4;i<WIDTH*HEIGHT/4;i++)
         {
-            for (y = 2; y < HEIGHT; y++)
-            {
-                const uint8_t rnd = hrng.Instance->DR % 3; // Get a random number from the HW random number generator
-                const int from = y * WIDTH + x;
-                const int to = from - rnd + wind + 1 - WIDTH;
-                // assert(to >= 0 && to < WIDTH*HEIGHT);
-                g_flamebuf[to]  = g_flamebuf[from] - (rnd&(g_flamebuf[from]>0));
-            }
+                const uint32_t rnd = hrng.Instance->DR; // Get a random number from the HW random number generator
+
+                int to[4] = { i*4 + 0 + c - ((rnd >> 0)&0x03),
+                              i*4 + 1 + c - ((rnd >> 8)&0x03),
+                              i*4 + 2 + c - ((rnd >>16)&0x03),
+                              i*4 + 3 + c - ((rnd >>24)&0x03) };
+
+                const uint32_t r = __UQSUB8(f[i], rnd&mask);
+                g_flamebuf[ to[0] ] = (r >> 24);
+                g_flamebuf[ to[1] ] = (r >> 16)&0xff;
+                g_flamebuf[ to[2] ] = (r >>  8)&0xff;
+                g_flamebuf[ to[3] ] = (r >>  0)&0xff;
         }
 
         // Use DMA2D to copy the content of g_flamebuf to the framebuffer

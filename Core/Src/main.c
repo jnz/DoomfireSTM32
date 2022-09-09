@@ -132,40 +132,6 @@ int main(void)
 static void init(void)
 {
     PALETTE_SIZE = 0;
-    /*
-    g_firepalette[PALETTE_SIZE++] = 0xFF000000;
-    g_firepalette[PALETTE_SIZE++] = 0xFF121111;
-    g_firepalette[PALETTE_SIZE++] = 0xFF121111;
-    g_firepalette[PALETTE_SIZE++] = 0xFF2F2D2C;
-    g_firepalette[PALETTE_SIZE++] = 0xFF392D2A;
-    g_firepalette[PALETTE_SIZE++] = 0xFF392D2A;
-    g_firepalette[PALETTE_SIZE++] = 0xFF522F26;
-    g_firepalette[PALETTE_SIZE++] = 0xFF522F26;
-    g_firepalette[PALETTE_SIZE++] = 0xFF653022;
-    g_firepalette[PALETTE_SIZE++] = 0xFF7B321F;
-    g_firepalette[PALETTE_SIZE++] = 0xFF8E361E;
-    g_firepalette[PALETTE_SIZE++] = 0xFFA23B1F;
-    g_firepalette[PALETTE_SIZE++] = 0xFFB6411F;
-    g_firepalette[PALETTE_SIZE++] = 0xFFD14A20;
-    g_firepalette[PALETTE_SIZE++] = 0xFFDA5A21;
-    g_firepalette[PALETTE_SIZE++] = 0xFFDA5A21;
-    g_firepalette[PALETTE_SIZE++] = 0xFFDA5A21;
-    g_firepalette[PALETTE_SIZE++] = 0xFFE26F22;
-    g_firepalette[PALETTE_SIZE++] = 0xFFEE9422;
-    g_firepalette[PALETTE_SIZE++] = 0xFFF6AB23;
-    g_firepalette[PALETTE_SIZE++] = 0xFFF6AB23;
-    g_firepalette[PALETTE_SIZE++] = 0xFFF8C234;
-    g_firepalette[PALETTE_SIZE++] = 0xFFF8C234;
-    g_firepalette[PALETTE_SIZE++] = 0xFFF9DF56;
-    g_firepalette[PALETTE_SIZE++] = 0xFFFAEB73;
-    g_firepalette[PALETTE_SIZE++] = 0xFFFCF58C;
-    g_firepalette[PALETTE_SIZE++] = 0xFFFCF58C;
-    g_firepalette[PALETTE_SIZE++] = 0xFFFFFDA2;
-    g_firepalette[PALETTE_SIZE++] = 0xFFFFFFD3;
-    g_firepalette[PALETTE_SIZE++] = 0xFFFFFFD3;
-    g_firepalette[PALETTE_SIZE++] = 0xFFFFFFFD;
-    g_firepalette[PALETTE_SIZE++] = 0xFFFFFFFF;
-    */
 
     g_firepalette[PALETTE_SIZE++] = 0xFF070707;
     g_firepalette[PALETTE_SIZE++] = 0xFF1F0707;

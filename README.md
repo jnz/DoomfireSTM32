@@ -27,4 +27,5 @@ Development
 -----------
 
 The STM32CubeIDE workspace (Eclipse) project files are included.
+The main code is in `Core/Src/main.c` plus a big load of boilerplate code.
 

@@ -5,6 +5,10 @@ An implementation of the Playstation 1 Doom fire effect on an STM32F429 microcon
 
 ![gif](doc/example.gif?raw=1)
 
+Read how the Doom fire was done in an article by Fabien Sanglard:
+
+ * https://fabiensanglard.net/doom_fire_psx/
+
 Overall this is pretty useless, but you can use it as a desktop ornament (if you
 have a spare STM32429DISC1 discovery kit lying around) 
 

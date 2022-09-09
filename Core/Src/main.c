@@ -13,10 +13,13 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include "stm32f429i_discovery_lcd.h"
+#include "stm32f429i_discovery_gyroscope.h"
 
 /* Private includes ----------------------------------------------------------*/
 
@@ -32,7 +35,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 UART_HandleTypeDef huart1;
-DMA_HandleTypeDef hdma_usart1_tx;
+// DMA_HandleTypeDef hdma_usart1_tx;
 DMA2D_HandleTypeDef hdma2d;
 LTDC_HandleTypeDef hltdc;
 SDRAM_HandleTypeDef hsdram1;
@@ -42,11 +45,12 @@ static uint32_t g_firepalette[0xFF]; // fire color palette definition
 static int PALETTE_SIZE; // number of valid entries in g_firepalette
 static uint8_t g_flamebuf[WIDTH * HEIGHT]; // simulation buffer, 1 byte/pixel
 static int LCD_LAYER; // active display layer
+static bool g_gyroReady;
 
 /* Private function prototypes -----------------------------------------------*/
 static void initPalette(void);
 void SystemClock_Config(void);
-static void MX_DMA_Init(void);
+// static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 
 void defaultTask(void);
@@ -65,10 +69,18 @@ int main(void)
     HAL_Init();
     SystemClock_Config();
 
-    /* Initialize all configured peripherals */
-    MX_DMA_Init();
+    /* Gyroscope init */
+    if (BSP_GYRO_Init() == GYRO_OK)
+    {
+        BSP_GYRO_Reset();
+        g_gyroReady = true;
+    }
+
+    /* Serial output (UART)  */
+    // MX_DMA_Init();
     MX_USART1_UART_Init();
-    hrng.Instance = RNG; // Setup hardware random number generator
+    /* Setup hardware random number generator */
+    hrng.Instance = RNG;
     HAL_RNG_Init(&hrng);
 
     /* Display setup */
@@ -183,6 +195,9 @@ void defaultTask(void)
     volatile uint32_t* fb = (uint32_t*)LCD_FRAME_BUFFER; // output framebuffer WIDTH*HEIGHT*4 (one uint32 per pixel ARGB8888)
     int frameTimeMs = 0; // current frametime in ms
     uint8_t uartAsciiOutput[128]; // debug ASCII output buffer for UART sending
+    float rates[3] = {0,0,0};
+    float lprate = 0.0f;
+    int wind = 0;
 
     for(uint32_t epoch=0;;epoch++)
     {
@@ -194,7 +209,7 @@ void defaultTask(void)
             {
                 const uint8_t rnd = hrng.Instance->DR % 3; // Get a random number from the HW random number generator
                 const uint32_t from = y * WIDTH + x;
-                const uint32_t to = from - rnd + 1;
+                const uint32_t to = from - rnd + wind + 1;
                 g_flamebuf[to - WIDTH] = g_flamebuf[from] - (rnd&(g_flamebuf[from]>0));
             }
         }
@@ -203,6 +218,23 @@ void defaultTask(void)
         // This is faster than manually updating the LCD frame buffer.
         HAL_DMA2D_PollForTransfer(&hdma2d, setpointframeTimeMs); // make sure DMA2D is ready for the next transfer
         HAL_DMA2D_Start(&hdma2d, (uint32_t)g_flamebuf, (uint32_t)fb, WIDTH, HEIGHT);
+
+        /* poll gyro */
+        if (g_gyroReady)
+        {
+            BSP_GYRO_GetXYZ(rates);
+            lprate = 0.50f * lprate + 0.50f * rates[2];
+            if (epoch % 2 == 0)
+            {
+                wind = (int)(lprate/(2*1024.0f));
+                if (wind >  1) wind =  1; // default wind (+1) to the right is already included
+                if (wind < -5) wind = -5;
+            }
+            else
+            {
+                wind = 0;
+            }
+        }
 
         frameTimeMs = (int)(HAL_GetTick() - tickStart);
         const int timeleft = setpointframeTimeMs - frameTimeMs;
@@ -215,7 +247,7 @@ void defaultTask(void)
         if (epoch % 60 == 0 && HAL_UART_GetState(&huart1) == HAL_UART_STATE_READY)
         {
             const int bytesInBuffer =
-                    snprintf((char*)uartAsciiOutput, sizeof(uartAsciiOutput), "T %i ms\r\n", frameTimeMs);
+                    snprintf((char*)uartAsciiOutput, sizeof(uartAsciiOutput), "%i ms W %2i (GYR %s)\r\n", frameTimeMs, wind, g_gyroReady ? "ON":"OFF");
             HAL_UART_Transmit(&huart1, uartAsciiOutput, bytesInBuffer, 32);
             // HAL_UART_Transmit_DMA(&huart1, outputBuffer, bytesInBuffer); // WARNING DMA not configured properly
         }
@@ -263,6 +295,7 @@ void SystemClock_Config(void)
     HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
 }
 
+#if 0
 /**
   * Enable DMA controller clock
   */
@@ -276,6 +309,7 @@ static void MX_DMA_Init(void)
     HAL_NVIC_SetPriority(DMA2_Stream7_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(DMA2_Stream7_IRQn);
 }
+#endif
 
 /**
  * @brief USART1 Initialization Function

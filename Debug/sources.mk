@@ -23,6 +23,7 @@ C_DEPS :=
 SUBDIRS := \
 Core/Src \
 Core/Startup \
+Drivers/BSP/Components/i3g4250d \
 Drivers/BSP/Components/ili9341 \
 Drivers/BSP/Components/l3gd20 \
 Drivers/BSP/Components/stmpe811 \

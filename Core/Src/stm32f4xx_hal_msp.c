@@ -135,6 +135,7 @@ void HAL_DMA2D_MspDeInit(DMA2D_HandleTypeDef* hdma2d)
 * @param hi2c: I2C handle pointer
 * @retval None
 */
+#if 0
 void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -203,6 +204,7 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* hi2c)
   }
 
 }
+#endif
 
 /**
 * @brief LTDC MSP Initialization
@@ -395,6 +397,7 @@ void HAL_LTDC_MspDeInit(LTDC_HandleTypeDef* hltdc)
 
 }
 
+#if 0
 /**
 * @brief SPI MSP Initialization
 * This function configures the hardware resources used in this example
@@ -461,6 +464,7 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* hspi)
   }
 
 }
+#endif
 
 /**
 * @brief TIM_Base MSP Initialization
@@ -535,6 +539,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
         GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
         HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+#if 0
         /* USART1 DMA Init */
         /* USART1_TX Init */
         hdma_usart1_tx.Instance = DMA2_Stream7;
@@ -553,6 +558,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
         }
 
         __HAL_LINKDMA(huart,hdmatx,hdma_usart1_tx);
+#endif
 
         /* USART1 interrupt Init */
         HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);

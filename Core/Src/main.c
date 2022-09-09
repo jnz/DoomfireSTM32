@@ -48,7 +48,7 @@ static uint8_t g_firebuf[WIDTH * HEIGHT]; // more like "flamebuf" :-)
 static int LCD_LAYER;
 
 /* Private function prototypes -----------------------------------------------*/
-static void init(void);
+static void initPalette(void);
 void SystemClock_Config(void);
 static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
@@ -109,7 +109,7 @@ int main(void)
     HAL_DMA2D_ConfigLayer(&hdma2d, LCD_LAYER);
 
     /* Load the color palette */
-    init();
+    initPalette();
     DMA2D_CLUTCfgTypeDef CLUTCfg;
     CLUTCfg.Size = 0xFF; // PALETTE_SIZE;
     CLUTCfg.CLUTColorMode = DMA2D_CCM_ARGB8888;
@@ -129,7 +129,7 @@ int main(void)
     while (1) {} /* should never end up here */
 }
 
-static void init(void)
+static void initPalette(void)
 {
     PALETTE_SIZE = 0;
 

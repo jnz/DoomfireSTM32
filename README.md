@@ -1,7 +1,7 @@
 DoomfireSTM32 ("flamebuffer")
 =============================
 
-An implementation of the Playstation 1 Doom fire effect on an STM32F429 microcontroller:
+An implementation of the Playstation 1 Doom fire effect on an STM32F429 microcontroller, reacting to board movement:
 
 ![gif](doc/gyro.gif?raw=1)
 
@@ -15,10 +15,10 @@ Press the blue user button to stop the fire temporarily.
 
 Features:
 
-    * Fire is reacting to movement (reading gyroscope data)
-    * Full TFT resolution (measly 320x240 though) but running at stable 60 Hz
-    * CPU is idle for a good part of the 60 Hz frametime and put into low-power mode
-    * ChromART (DMA2D) is used to speed up the drawing
+ * Fire is reacting to movement (by reading gyroscope data)
+ * Full TFT resolution (measly 320x240 though) but running at stable 60 Hz
+ * CPU is idle for a good part of the 60 Hz frametime and put into low-power mode
+ * ChromART (DMA2D) is used to speed up the drawing
 
 Installation
 ------------

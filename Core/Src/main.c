@@ -53,7 +53,7 @@ void SystemClock_Config(void);
 // static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 
-void defaultTask(void);
+void defaultTask(void) /*__attribute__ ((section(".RamFunc"))) */; // Code is slower from RAM. The ART cache is faster.
 
 /* Private user code ---------------------------------------------------------*/
 

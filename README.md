@@ -14,6 +14,7 @@ have a spare STM32429DISC1 discovery kit lying around)
 Press the blue user button to stop the fire temporarily.
 
 Features:
+---------
 
  * Fire is reacting to movement (by reading gyroscope data)
  * Full TFT resolution (measly 320x240 though) but running at stable 60 Hz

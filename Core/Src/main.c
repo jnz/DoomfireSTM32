@@ -204,7 +204,7 @@ void defaultTask(void)
         int x, y;
         uint32_t tickStart = HAL_GetTick();
 
-        uint32_t* f = (uint32_t*)g_flamebuf;
+        const uint32_t* f = (uint32_t*)g_flamebuf;
         const int c = wind + 1 - WIDTH;
         const uint32_t mask = 0x1010101;
 
